@@ -17,7 +17,7 @@ message SaveUrlRequest {
 	string site = 2;
 }
 message SaveUserRequest {
-	string username = 1;
+	string token = 1;
 	int64 chatID = 2;
 }
 
