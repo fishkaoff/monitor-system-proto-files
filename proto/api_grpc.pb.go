@@ -22,9 +22,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StorageClient interface {
-	Save(ctx context.Context, in *SaveRequest, opts ...grpc.CallOption) (*SaveResponse, error)
-	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	SaveUrl(ctx context.Context, in *SaveUrlRequest, opts ...grpc.CallOption) (*SaveUrlResponse, error)
+	GetUrl(ctx context.Context, in *GetUrlRequest, opts ...grpc.CallOption) (*GetUrlResponse, error)
+	DeleteUrl(ctx context.Context, in *DeleteUrlRequest, opts ...grpc.CallOption) (*DeleteUrlResponse, error)
+	SaveUser(ctx context.Context, in *SaveUserRequest, opts ...grpc.CallOption) (*SaveUserResponse, error)
 }
 
 type storageClient struct {
@@ -35,27 +36,36 @@ func NewStorageClient(cc grpc.ClientConnInterface) StorageClient {
 	return &storageClient{cc}
 }
 
-func (c *storageClient) Save(ctx context.Context, in *SaveRequest, opts ...grpc.CallOption) (*SaveResponse, error) {
-	out := new(SaveResponse)
-	err := c.cc.Invoke(ctx, "/Storage/Save", in, out, opts...)
+func (c *storageClient) SaveUrl(ctx context.Context, in *SaveUrlRequest, opts ...grpc.CallOption) (*SaveUrlResponse, error) {
+	out := new(SaveUrlResponse)
+	err := c.cc.Invoke(ctx, "/Storage/SaveUrl", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *storageClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
-	out := new(GetResponse)
-	err := c.cc.Invoke(ctx, "/Storage/Get", in, out, opts...)
+func (c *storageClient) GetUrl(ctx context.Context, in *GetUrlRequest, opts ...grpc.CallOption) (*GetUrlResponse, error) {
+	out := new(GetUrlResponse)
+	err := c.cc.Invoke(ctx, "/Storage/GetUrl", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *storageClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
-	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, "/Storage/Delete", in, out, opts...)
+func (c *storageClient) DeleteUrl(ctx context.Context, in *DeleteUrlRequest, opts ...grpc.CallOption) (*DeleteUrlResponse, error) {
+	out := new(DeleteUrlResponse)
+	err := c.cc.Invoke(ctx, "/Storage/DeleteUrl", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageClient) SaveUser(ctx context.Context, in *SaveUserRequest, opts ...grpc.CallOption) (*SaveUserResponse, error) {
+	out := new(SaveUserResponse)
+	err := c.cc.Invoke(ctx, "/Storage/SaveUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +76,10 @@ func (c *storageClient) Delete(ctx context.Context, in *DeleteRequest, opts ...g
 // All implementations must embed UnimplementedStorageServer
 // for forward compatibility
 type StorageServer interface {
-	Save(context.Context, *SaveRequest) (*SaveResponse, error)
-	Get(context.Context, *GetRequest) (*GetResponse, error)
-	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	SaveUrl(context.Context, *SaveUrlRequest) (*SaveUrlResponse, error)
+	GetUrl(context.Context, *GetUrlRequest) (*GetUrlResponse, error)
+	DeleteUrl(context.Context, *DeleteUrlRequest) (*DeleteUrlResponse, error)
+	SaveUser(context.Context, *SaveUserRequest) (*SaveUserResponse, error)
 	mustEmbedUnimplementedStorageServer()
 }
 
@@ -76,14 +87,17 @@ type StorageServer interface {
 type UnimplementedStorageServer struct {
 }
 
-func (UnimplementedStorageServer) Save(context.Context, *SaveRequest) (*SaveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Save not implemented")
+func (UnimplementedStorageServer) SaveUrl(context.Context, *SaveUrlRequest) (*SaveUrlResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveUrl not implemented")
 }
-func (UnimplementedStorageServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+func (UnimplementedStorageServer) GetUrl(context.Context, *GetUrlRequest) (*GetUrlResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUrl not implemented")
 }
-func (UnimplementedStorageServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+func (UnimplementedStorageServer) DeleteUrl(context.Context, *DeleteUrlRequest) (*DeleteUrlResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUrl not implemented")
+}
+func (UnimplementedStorageServer) SaveUser(context.Context, *SaveUserRequest) (*SaveUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveUser not implemented")
 }
 func (UnimplementedStorageServer) mustEmbedUnimplementedStorageServer() {}
 
@@ -98,56 +112,74 @@ func RegisterStorageServer(s grpc.ServiceRegistrar, srv StorageServer) {
 	s.RegisterService(&Storage_ServiceDesc, srv)
 }
 
-func _Storage_Save_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveRequest)
+func _Storage_SaveUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveUrlRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StorageServer).Save(ctx, in)
+		return srv.(StorageServer).SaveUrl(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Storage/Save",
+		FullMethod: "/Storage/SaveUrl",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StorageServer).Save(ctx, req.(*SaveRequest))
+		return srv.(StorageServer).SaveUrl(ctx, req.(*SaveUrlRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Storage_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRequest)
+func _Storage_GetUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUrlRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StorageServer).Get(ctx, in)
+		return srv.(StorageServer).GetUrl(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Storage/Get",
+		FullMethod: "/Storage/GetUrl",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StorageServer).Get(ctx, req.(*GetRequest))
+		return srv.(StorageServer).GetUrl(ctx, req.(*GetUrlRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Storage_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteRequest)
+func _Storage_DeleteUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUrlRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StorageServer).Delete(ctx, in)
+		return srv.(StorageServer).DeleteUrl(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Storage/Delete",
+		FullMethod: "/Storage/DeleteUrl",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StorageServer).Delete(ctx, req.(*DeleteRequest))
+		return srv.(StorageServer).DeleteUrl(ctx, req.(*DeleteUrlRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Storage_SaveUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServer).SaveUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Storage/SaveUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServer).SaveUser(ctx, req.(*SaveUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -160,16 +192,20 @@ var Storage_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*StorageServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Save",
-			Handler:    _Storage_Save_Handler,
+			MethodName: "SaveUrl",
+			Handler:    _Storage_SaveUrl_Handler,
 		},
 		{
-			MethodName: "Get",
-			Handler:    _Storage_Get_Handler,
+			MethodName: "GetUrl",
+			Handler:    _Storage_GetUrl_Handler,
 		},
 		{
-			MethodName: "Delete",
-			Handler:    _Storage_Delete_Handler,
+			MethodName: "DeleteUrl",
+			Handler:    _Storage_DeleteUrl_Handler,
+		},
+		{
+			MethodName: "SaveUser",
+			Handler:    _Storage_SaveUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

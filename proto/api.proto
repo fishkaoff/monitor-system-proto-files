@@ -4,34 +4,44 @@ option go_package = "/";
 
 
 service Storage {
-	rpc Save(SaveRequest) returns (SaveResponse);
-	rpc Get(GetRequest) returns (GetResponse);
-	rpc Delete(DeleteRequest) returns (DeleteResponse);
+	rpc SaveUrl(SaveUrlRequest) returns (SaveUrlResponse);
+	rpc GetUrl(GetUrlRequest) returns (GetUrlResponse);
+	rpc DeleteUrl(DeleteUrlRequest) returns (DeleteUrlResponse);
+	rpc SaveUser(SaveUserRequest) returns (SaveUserResponse);
 }
 
-message SaveRequest {
+
+// save requeststs
+message SaveUrlRequest {
 	int64 chatID = 1;
 	string site = 2;
 }
+message SaveUserRequest {
+	string username = 1;
+	int64 chatID = 2;
+}
 
-message SaveResponse {
+// save responses
+message SaveUrlResponse {
+	string message = 1;
+}
+message SaveUserResponse {
 	string message = 1;
 }
 
-message GetRequest {
+// get requests
+message GetUrlRequest {
 	int64 chatID = 1;
 }
 
-message GetResponse {
+// get responses
+message GetUrlResponse {
 	repeated string message = 1;
 }
-
-
-message DeleteRequest {
+message DeleteUrlRequest {
 	int64 chatID = 1;
 	string site = 2;
 }
-
-message DeleteResponse {
+message DeleteUrlResponse {
 	string message = 1;
 }
